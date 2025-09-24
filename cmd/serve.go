@@ -10,11 +10,22 @@ func Serve() {
 	// router
 	mux := http.NewServeMux()
 	manager := middleware.NewManger()
-	manager.Use(middleware.Logger, middleware.Hudai, middleware.CorsWithPreflight)
+	manager.Use()
+
+	// global middleware
+	// globalMiddlewares := []middleware.Middleware{
+	// 	middleware.Hudai,
+	// 	middleware.Logger,
+	// 	middleware.CorsWithPreflight,
+	// }
+	manager.Use(middleware.Hudai, middleware.Logger, middleware.CorsWithPreflight)
+
+	wrappedMux := manager.WrapMux(
+		globalMiddlewares,
+		mux,
+	)
 
 	initRoutes(mux, manager)
-
-	wrappedMux := manager.With(mux)
 
 	fmt.Println("Server running on port 5000")
 	err := http.ListenAndServe(":5000", wrappedMux) // "Failed to start server"

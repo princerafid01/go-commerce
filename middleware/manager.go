@@ -26,17 +26,16 @@ func (mngr *Manager) With(handler http.Handler, middlewares ...Middleware) http.
 		h = middleware(h)
 	}
 
-	for _, globalMiddleware := range mngr.globalMiddlewares {
-		h = globalMiddleware(h)
-	}
 	return h
 }
 
-func (mngr *Manager) WrapMux(middlewares []Middleware, handler http.Handler) http.Handler {
+func (mngr *Manager) WrapMux(handler http.Handler) http.Handler {
+	// [Preflight, Cors, Logger]
+	// logger(cors(preflight(mux)))
 	h := handler
 
-	for _, globalMiddleware := range mngr.globalMiddlewares {
-		h = globalMiddleware(h)
+	for _, middleware := range mngr.globalMiddlewares {
+		h = middleware(h)
 	}
 	return h
 }

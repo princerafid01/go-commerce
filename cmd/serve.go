@@ -1,12 +1,17 @@
 package cmd
 
 import (
+	"ecommerce/config"
 	"ecommerce/middleware"
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 )
 
 func Serve() {
+	cnf := config.GetConfig()
+
 	manager := middleware.NewManger()
 	manager.Use(middleware.Preflight, middleware.Cors, middleware.Logger)
 
@@ -16,9 +21,11 @@ func Serve() {
 
 	initRoutes(mux, manager)
 
-	fmt.Println("Server running on port 5000")
-	err := http.ListenAndServe(":5000", wrappedMux) // "Failed to start server"
+	addr := ":" + strconv.Itoa(cnf.HttpPort)
+	fmt.Println("Server running on port ", addr)
+	err := http.ListenAndServe(addr, wrappedMux) // "Failed to start server"
 	if err != nil {
 		fmt.Println("Error starting server ", err)
+		os.Exit(1)
 	}
 }

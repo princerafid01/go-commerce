@@ -8,10 +8,28 @@ import (
 
 func initRoutes(mux *http.ServeMux, manager *middleware.Manager) {
 	mux.Handle("GET /api/products", manager.With(http.HandlerFunc(handlers.GetProducts)))
-	mux.Handle("POST /api/products", manager.With(http.HandlerFunc(handlers.CreateProducts)))
+	mux.Handle(
+		"POST /api/products",
+		manager.With(
+			http.HandlerFunc(handlers.CreateProducts),
+			middleware.AuthenticateJWT,
+		),
+	)
 	mux.Handle("GET /api/products/{id}", manager.With(http.HandlerFunc(handlers.GetProduct)))
-	mux.Handle("PUT /api/products/{id}", manager.With(http.HandlerFunc(handlers.UpdateProduct)))
-	mux.Handle("DELETE /api/products/{id}", manager.With(http.HandlerFunc(handlers.DeleteProduct)))
+	mux.Handle(
+		"PUT /api/products/{id}",
+		manager.With(
+			http.HandlerFunc(handlers.UpdateProduct),
+			middleware.AuthenticateJWT,
+		),
+	)
+	mux.Handle(
+		"DELETE /api/products/{id}",
+		manager.With(
+			http.HandlerFunc(handlers.DeleteProduct),
+			middleware.AuthenticateJWT,
+		),
+	)
 
 	mux.Handle("POST /api/users", manager.With(http.HandlerFunc(handlers.CreateUser)))
 	mux.Handle("POST /api/users/login", manager.With(http.HandlerFunc(handlers.Login)))

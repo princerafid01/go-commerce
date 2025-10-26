@@ -34,6 +34,7 @@ func (h *Handler) CreateProducts(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		utils.SendError(w, http.StatusInternalServerError, "Internal Server Error")
+		return
 	}
 	utils.SendData(w, http.StatusCreated, createdProduct)
 }

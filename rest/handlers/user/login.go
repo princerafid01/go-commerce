@@ -20,7 +20,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	usr, err := h.userRepo.Find(reqLogin.Email, reqLogin.Password)
+	usr, err := h.svc.Find(reqLogin.Email, reqLogin.Password)
 
 	if usr == nil {
 		utils.SendError(w, http.StatusForbidden, "Invalid Credentials")

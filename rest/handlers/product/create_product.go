@@ -1,7 +1,7 @@
 package product
 
 import (
-	"ecommerce/repo"
+	"ecommerce/domain"
 	"ecommerce/utils"
 	"encoding/json"
 	"fmt"
@@ -25,7 +25,7 @@ func (h *Handler) CreateProducts(w http.ResponseWriter, r *http.Request) {
 		utils.SendError(w, http.StatusBadRequest, "Invalid Request Body")
 		return
 	}
-	createdProduct, err := h.productRepo.Create(repo.Product{
+	createdProduct, err := h.svc.Create(domain.Product{
 		Title:       req.Title,
 		Description: req.Description,
 		Price:       req.Price,

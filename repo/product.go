@@ -2,28 +2,21 @@ package repo
 
 import (
 	"database/sql"
+	"ecommerce/domain"
 
 	"github.com/jmoiron/sqlx"
 )
 
-type Product struct {
-	ID          int     `json:"id" db:"id"`
-	Title       string  `json:"title" db:"title"`
-	Description string  `json:"description" db:"description"`
-	Price       float64 `json:"price" db:"price"`
-	ImgUrl      string  `json:"imageUrl" db:"img_url"`
-}
-
 type ProductRepo interface {
-	Create(p Product) (*Product, error)
-	Get(productID int) (*Product, error)
-	List() ([]*Product, error)
+	Create(p domain.Product) (*domain.Product, error)
+	Get(productID int) (*domain.Product, error)
+	List() ([]*domain.Product, error)
 	Delete(productID int) error
-	Update(product Product) (*Product, error)
+	Update(product domain.Product) (*domain.Product, error)
 }
 
 type productRepo struct {
-	// productList []*Product
+	// productList []*domain.Product
 	db *sqlx.DB
 }
 
@@ -34,7 +27,7 @@ func NewProductRepo(db *sqlx.DB) ProductRepo {
 	}
 }
 
-func (r *productRepo) Create(p Product) (*Product, error) {
+func (r *productRepo) Create(p domain.Product) (*domain.Product, error) {
 	query := `
 		INSERT INTO products (
 			title,
@@ -60,8 +53,8 @@ func (r *productRepo) Create(p Product) (*Product, error) {
 	return &p, nil
 }
 
-func (r *productRepo) Get(productID int) (*Product, error) {
-	var prd Product
+func (r *productRepo) Get(productID int) (*domain.Product, error) {
+	var prd domain.Product
 
 	query := `SELECT id, title, description, price, img_url from products WHERE id = $1`
 
@@ -77,8 +70,8 @@ func (r *productRepo) Get(productID int) (*Product, error) {
 	return &prd, nil
 }
 
-func (r *productRepo) List() ([]*Product, error) {
-	var prdList []*Product
+func (r *productRepo) List() ([]*domain.Product, error) {
+	var prdList []*domain.Product
 
 	query := `
 		SELECT id, title, description, price, img_url  from products
@@ -108,7 +101,7 @@ func (r *productRepo) Delete(productID int) error {
 	return nil
 }
 
-func (r *productRepo) Update(p Product) (*Product, error) {
+func (r *productRepo) Update(p domain.Product) (*domain.Product, error) {
 	query := `
 		UPDATE products
 		SET title=$1, description=$2, price=$3 , img_url = $4

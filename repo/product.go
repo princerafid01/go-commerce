@@ -10,7 +10,8 @@ import (
 type ProductRepo interface {
 	Create(p domain.Product) (*domain.Product, error)
 	Get(productID int) (*domain.Product, error)
-	List() ([]*domain.Product, error)
+	List(page, limit int64) ([]*domain.Product, error)
+	Count() (int64, error)
 	Delete(productID int) error
 	Update(product domain.Product) (*domain.Product, error)
 }
@@ -70,14 +71,19 @@ func (r *productRepo) Get(productID int) (*domain.Product, error) {
 	return &prd, nil
 }
 
-func (r *productRepo) List() ([]*domain.Product, error) {
+func (r *productRepo) List(page, limit int64) ([]*domain.Product, error) {
 	var prdList []*domain.Product
+
+	offset := (page - 1) * limit
 
 	query := `
 		SELECT id, title, description, price, img_url  from products
+		ORDER BY id
+		LIMIT $1
+		OFFSET $2
 	`
 
-	err := r.db.Select(&prdList, query)
+	err := r.db.Select(&prdList, query, limit, offset)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -87,6 +93,22 @@ func (r *productRepo) List() ([]*domain.Product, error) {
 	}
 
 	return prdList, nil
+}
+
+func (r *productRepo) Count() (int64, error) {
+	var productCount int64
+
+	query := `
+		SELECT COUNT(*) from products
+	`
+
+	err := r.db.Get(&productCount, query)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return productCount, nil
 }
 
 func (r *productRepo) Delete(productID int) error {

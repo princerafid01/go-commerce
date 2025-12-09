@@ -36,6 +36,7 @@ func (svc *service) Delete(id int) error {
 
 	return nil
 }
+
 func (svc *service) Get(id int) (*domain.Product, error) {
 	prd, err := svc.prdRepo.Get(id)
 
@@ -49,8 +50,9 @@ func (svc *service) Get(id int) (*domain.Product, error) {
 
 	return prd, nil
 }
-func (svc *service) List() ([]*domain.Product, error) {
-	prds, err := svc.prdRepo.List()
+
+func (svc *service) List(page, limit int64) ([]*domain.Product, error) {
+	prds, err := svc.prdRepo.List(page, limit)
 
 	if err != nil {
 		return nil, err
@@ -61,6 +63,20 @@ func (svc *service) List() ([]*domain.Product, error) {
 	}
 
 	return prds, nil
+}
+
+func (svc *service) Count() (int64, error) {
+	prdCount, err := svc.prdRepo.Count()
+
+	if err != nil {
+		return 0, err
+	}
+
+	if prdCount == 0 {
+		return 0, nil
+	}
+
+	return prdCount, nil
 }
 
 func (svc *service) Update(p domain.Product) (*domain.Product, error) {
